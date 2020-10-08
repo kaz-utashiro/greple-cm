@@ -1,6 +1,5 @@
 package App::Greple::cm;
-use 5.008001;
-use strict;
+use v5.14;
 use warnings;
 
 our $VERSION = "0.01";
@@ -24,16 +23,16 @@ App::Greple::cm - It's new $module
 
 App::Greple::cm is ...
 
+=head1 AUTHOR
+
+Kazumasa Utashiro
+
 =head1 LICENSE
 
-Copyright (C) Kazumasa Utashiro.
+Copyright 2020 Kazumasa Utashiro.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
-
-=head1 AUTHOR
-
-Kazumasa Utashiro E<lt>kaz@utashiro.comE<gt>
 
 =cut
 
