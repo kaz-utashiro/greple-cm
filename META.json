@@ -1,5 +1,5 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "Greple module to load colormap file",
    "author" : [
       "Kazumasa Utashiro"
    ],
@@ -42,7 +42,7 @@
       },
       "runtime" : {
          "requires" : {
-            "App::Greple" : "0",
+            "App::Greple" : "8.4005",
             "perl" : "v5.14.0"
          }
       },

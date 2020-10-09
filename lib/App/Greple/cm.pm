@@ -13,11 +13,11 @@ App::Greple::cm - Greple module to load colormap file
 
 =head1 SYNOPSIS
 
-    greple -Mcm --load-colormap ...
+    greple -Mcm [ options ... ]
 
 =head1 DESCRIPTION
 
-App::Greple::cm is ...
+This is a greple module to handle colormap.
 
 =head1 AUTHOR
 
@@ -39,7 +39,18 @@ use Data::Dumper;
 use App::Greple::Common;
 use Getopt::EX::Colormap qw(colorize);
 
-my($mod, $argv) = @_;
+my %param = (
+    name => 0,
+    name_format => "[%s]",
+    name_position => "right",
+    string_format => "%s",
+    color => "",
+    samecolor => 0,
+    reverse => 0,
+);
+
+my($mod, $argv);
+my @cm;
 
 sub initialize {
     ($mod, $argv) = @_;
@@ -50,28 +61,49 @@ sub load {
     my $filename = delete $arg{&FILELABEL};
     my $file = $arg{file};
     open my $fh, "<", $file or die;
-    my @cm = map { chomp; [ split ' ', $_, 2 ] } <$fh>;
-    if ($arg{colorname}) {
-	map {
-	    my $color = $_->[0];
-	    ( "--cm" => "&__cm__comment(color=$color)" );
+    @cm = do {
+	map  { chomp; [ split ' ', $_, 2 ] }
+	grep { not /^\s*(?:$|#)/ }
+	<$fh>;
+    };
+    ();
+}
+
+sub option {
+    map { ( "--cm" => "&__cm(c=$_->[0])" ) } @cm;
+}
+
+push @EXPORT, qw(&__cm);
+sub __cm {
+    my %arg = (%param, @_);
+    my $s = sprintf $param{string_format}, colorize($arg{c}, $_);
+    if ($arg{name}) {
+	my $name = $arg{c};
+	my $color = $param{samecolor} ? $arg{c} : $param{color};
+	if ($color) {
+	    $color .= "S" if $param{reverse};
+	    $name = colorize($color, $name);
 	}
-	@cm;
-    } else {
-	( "--cm" => join ',', map $_->[0], @cm );
+	$name = sprintf $param{name_format}, $name;
+	if ($param{name_position} eq 'right') {
+	    $s .= $name;
+	} else {
+	    $s = $name . $s;
+	}
     }
+    $s;
 }
 
-push @EXPORT, qw(&__cm__comment);
-sub __cm__comment {
-    comment(@_);
-}
-
-sub comment {
+sub setparam {
     my %arg = @_;
-    my $s = colorize($arg{color}, $_);
-    my $comment = sprintf "[%s]", $arg{color};
-    $s . $comment;
+    for my $key (keys %arg) {
+	if (not exists $param{$key}) {
+	    warn "$key: Unknown parameter\n";
+	    next;
+	}
+	$param{$key} = $arg{$key};
+    }
+    return ();
 }
 
 1;
@@ -80,7 +112,6 @@ __DATA__
 
 mode function
 
-option --load-colormap &load(file=$<shift>)
-option --load-colormap-colorname &load(file=$<shift>,colorname)
-
-option --load-cm --load-colormap
+option --cm-param &setparam($<shift>)
+option --cm-file  &load(file=$<shift>)
+option --cm-option &option

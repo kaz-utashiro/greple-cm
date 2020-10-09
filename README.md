@@ -1,11 +1,11 @@
 
 # NAME
 
-App::Greple::cm - It's new $module
+App::Greple::cm - Greple module to load colormap file
 
 # SYNOPSIS
 
-    use App::Greple::cm;
+    greple -Mcm --load-colormap ...
 
 # DESCRIPTION
 
